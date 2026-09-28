@@ -1,8 +1,52 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MANSA BTP — Administration</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>body{margin:0;font-family:Arial,sans-serif;background:#f6f8fb;color:#102033}.wrap{max-width:1100px;margin:40px auto;padding:0 18px}.card{background:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.10);overflow:hidden}.head{background:#0b2e59;color:#fff;padding:22px 26px;display:flex;justify-content:space-between;align-items:center}.head h1{margin:0;font-size:21px}.body{padding:24px}.login{max-width:430px;margin:12vh auto}.login h2{margin-top:0;color:#0b2e59}.input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #d8dee8;border-radius:9px;margin:7px 0 14px;font:inherit}.btn{border:0;border-radius:9px;padding:11px 16px;background:#f2ad00;color:#102033;font-weight:700;cursor:pointer}.btn.secondary{background:#fff;color:#0b2e59;border:1px solid #d8dee8}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.error{display:none;background:#fff0f0;color:#a61b1b;padding:10px;border-radius:9px;font-size:13px}.note{background:#f6f8fb;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.item{border:1px solid #e5e7eb;border-radius:12px;padding:12px}.item img{width:100%;height:150px;object-fit:cover;border-radius:9px;background:#eee}.item b{display:block;margin:9px 0;font-size:13px}.hidden{display:none!important}</style></head><body><div id="login" class="wrap login"><div class="card"><div class="head"><h1>MANSA BTP — Administration</h1></div><div class="body"><p>Accès privé. Connectez-vous avec le compte administrateur Supabase.</p><form id="form"><label>E-mail</label><input id="email" class="input" type="email" required autocomplete="username"><label>Mot de passe</label><input id="password" class="input" type="password" required autocomplete="current-password"><div id="err" class="error"></div><div class="actions"><button class="btn" type="submit">Se connecter</button><a class="btn secondary" href="../">Retour au site</a></div></form></div></div></div><div id="app" class="wrap hidden"><div class="card"><div class="head"><h1>Administration MANSA BTP</h1><button id="logout" class="btn secondary">Se déconnecter</button></div><div class="body"><p class="note">Cette page est privée. Les visiteurs du site public ne voient aucun accès à l'administration.</p><div id="grid" class="grid"></div><div class="actions"><button id="save" class="btn">Enregistrer les modifications</button><button id="reset" class="btn secondary">Réinitialiser les images d’origine</button></div></div></div></div><script>
-const SUPABASE_URL='https://cwfjfqdkcramkxfakfwx.supabase.co';const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFub24iLCJpYXQiOjE3OTA2MjM5MjAsImV4cCI6MjEwNjE5OTkyMH0.6Mg9gJT_4ID4oKKk0jAI9u4l3OY30xna4_itWCu8AMg';const BUCKET='site-images';const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);const configUrl=SUPABASE_URL+'/storage/v1/object/public/'+BUCKET+'/config.json';let originals=[],pending={};
-const login=document.getElementById('login'),app=document.getElementById('app'),grid=document.getElementById('grid'),err=document.getElementById('err');
-function error(m){err.textContent=m;err.style.display='block'} async function loadOriginals(){const r=await fetch('../index.html',{cache:'no-store'});if(!r.ok)throw new Error('Impossible de charger le site public.');const t=await r.text();const d=new DOMParser().parseFromString(t,'text/html');originals=[...d.querySelectorAll('img')].map((x,i)=>({src:x.getAttribute('src')||'',alt:x.getAttribute('alt')||('Image '+(i+1))}));}
-async function config(){try{const r=await fetch(configUrl+'?v='+Date.now(),{cache:'no-store'});return r.ok?await r.json():{images:{}}}catch(e){return {images:{}}}}
-async function render(){await loadOriginals();const c=await config();grid.innerHTML='';pending={};originals.forEach((im,i)=>{const card=document.createElement('div');card.className='item';const pic=document.createElement('img');pic.src=(c.images&&c.images[i])||im.src;pic.alt=im.alt;const b=document.createElement('b');b.textContent=im.alt||('Image '+(i+1));const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=()=>{const f=input.files&&input.files[0];if(f){pending[i]=f;pic.src=URL.createObjectURL(f)}};card.append(pic,b,input);grid.appendChild(card)})}
-async function show(){login.classList.add('hidden');app.classList.remove('hidden');await render()} document.getElementById('form').onsubmit=async e=>{e.preventDefault();err.style.display='none';const {error:e1}=await sb.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(e1){error('E-mail ou mot de passe incorrect.');return}show()};document.getElementById('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};document.getElementById('save').onclick=async()=>{try{const {data:{session}}=await sb.auth.getSession();if(!session)return location.reload();const c=await config();c.images=c.images||{};for(const i of Object.keys(pending)){const f=pending[i],ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg',path='image-'+(Number(i)+1)+'.'+ext;const {error}=await sb.storage.from(BUCKET).upload(path,f,{upsert:true,contentType:f.type||'image/jpeg',cacheControl:'3600'});if(error)throw error;c.images[i]=sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}const blob=new Blob([JSON.stringify(c)],{type:'application/json'});const {error:ce}=await sb.storage.from(BUCKET).upload('config.json',blob,{upsert:true,contentType:'application/json',cacheControl:'0'});if(ce)throw ce;pending={};alert('Modifications enregistrées.');await render()}catch(e){console.error(e);alert('Erreur lors de l’enregistrement. Vérifiez le bucket site-images et ses policies.')}};document.getElementById('reset').onclick=async()=>{if(!confirm('Réinitialiser les images d’origine ?'))return;const {error}=await sb.storage.from(BUCKET).remove(['config.json']);if(error){alert('Impossible de réinitialiser.');return}alert('Images réinitialisées.');location.reload()};(async()=>{const {data:{session}}=await sb.auth.getSession();if(session)await show()})();
-</script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MANSA BTP — Administration</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f6f8fb;margin:0;color:#102033}
+    .box{max-width:520px;margin:80px auto;background:white;padding:30px;border-radius:14px;box-shadow:0 8px 30px #0001}
+    h1{color:#0b2e59}.field{margin:14px 0}label{display:block;margin-bottom:6px;font-weight:600}
+    input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccd3dc;border-radius:8px}
+    button{margin-top:15px;background:#0b2e59;color:white;border:0;padding:12px 18px;border-radius:8px;cursor:pointer}
+    #msg{margin-top:15px}.hidden{display:none}
+  </style>
+</head>
+<body>
+<div class="box" id="loginBox">
+  <h1>MANSA BTP</h1>
+  <p>Administration privée</p>
+  <form id="loginForm">
+    <div class="field"><label>E-mail</label><input id="email" type="email" required></div>
+    <div class="field"><label>Mot de passe</label><input id="password" type="password" required></div>
+    <button type="submit">Se connecter</button>
+  </form>
+  <div id="msg"></div>
+</div>
+<div class="box hidden" id="adminBox">
+  <h1>Administration MANSA BTP</h1>
+  <p>Vous êtes connecté.</p>
+  <button id="logout">Se déconnecter</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://cwfjfqdkcramkxfakfwx.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjd2ZqZGtkY3JhbWt4ZmFrZnd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MjM5MjAsImV4cCI6MjEwNjE5OTkyMH0.6Mg9gJT_4ID4oKKk0jAIu4l3OY30xna4_itWCu8AMg";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const msg = document.getElementById("msg");
+async function check(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){ loginBox.classList.add("hidden"); adminBox.classList.remove("hidden"); }
+}
+loginForm.addEventListener("submit", async e=>{
+  e.preventDefault(); msg.textContent="Connexion...";
+  const {error}=await sb.auth.signInWithPassword({email:email.value,password:password.value});
+  if(error) msg.textContent="Erreur : "+error.message; else check();
+});
+logout.onclick=async()=>{await sb.auth.signOut(); location.reload()};
+check();
+</script>
+</body>
+</html>
