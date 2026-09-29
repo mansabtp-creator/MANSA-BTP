@@ -1,26 +1,796 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MANSA BTP — Administration</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>MANSA BTP — Construire avec expertise</title>
+
+<meta name="description" content="MANSA BTP — Entreprise de construction et de génie civil en Guinée.">
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f8fb;color:#102033}.box{width:calc(100% - 32px);max-width:1000px;margin:40px auto;background:#fff;padding:28px;border-radius:16px;box-shadow:0 8px 30px #0001}.hidden{display:none}h1{color:#0b2e59}.field{margin:14px 0}label{display:block;margin-bottom:6px;font-weight:600}input{width:100%;padding:12px;border:1px solid #ccd3dc;border-radius:8px}button{padding:11px 16px;border:0;border-radius:8px;background:#0b2e59;color:#fff;cursor:pointer}.logout{float:right}.msg{margin-top:14px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:22px}.card{border:1px solid #e4e8ee;border-radius:12px;padding:12px}.card img{width:100%;height:150px;object-fit:cover;border-radius:8px;background:#eef2f6}.card h3{font-size:15px;margin:10px 0}.small{font-size:12px;color:#667085}.save{margin-top:10px;background:#f2ad00;color:#102033;font-weight:700}.top{display:flex;justify-content:space-between;gap:15px;align-items:center}.status{margin:15px 0;padding:12px;border-radius:9px;background:#f6f8fb}.danger{color:#a61b1b}
+:root{
+  --navy:#0b2e59;
+  --gold:#f2ad00;
+  --ink:#102033;
+  --muted:#667085;
+  --light:#f6f8fb;
+  --white:#fff;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:var(--white);
+  line-height:1.6;
+}
+
+img{
+  max-width:100%;
+  display:block;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* ================= HEADER ================= */
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:76px;
+  background:#fff;
+  z-index:1000;
+  box-shadow:0 2px 15px rgba(0,0,0,.08);
+}
+
+.header-inner{
+  max-width:1200px;
+  height:100%;
+  margin:auto;
+  padding:0 25px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  font-size:25px;
+  font-weight:900;
+  color:var(--navy);
+  letter-spacing:.5px;
+}
+
+.logo span{
+  color:var(--gold);
+}
+
+.menu-button{
+  border:0;
+  background:var(--navy);
+  color:white;
+  width:45px;
+  height:45px;
+  border-radius:8px;
+  font-size:25px;
+  cursor:pointer;
+}
+
+.menu{
+  position:absolute;
+  top:70px;
+  right:20px;
+  background:white;
+  width:220px;
+  border-radius:10px;
+  box-shadow:0 10px 35px rgba(0,0,0,.15);
+  overflow:hidden;
+  display:none;
+}
+
+.menu.open{
+  display:block;
+}
+
+.menu a{
+  display:block;
+  padding:14px 18px;
+  color:var(--ink);
+  font-weight:600;
+}
+
+.menu a:hover{
+  background:var(--light);
+  color:var(--navy);
+}
+
+/* ================= HERO ================= */
+
+.hero{
+  min-height:760px;
+  padding-top:76px;
+  display:flex;
+  align-items:center;
+  position:relative;
+  background:
+    linear-gradient(90deg,rgba(5,25,50,.92),rgba(5,25,50,.65)),
+    url("https://cwfjfqdkcramkxfakfwx.supabase.co/storage/v1/object/public/site-images/image-1")
+    center/cover no-repeat;
+}
+
+.hero-content{
+  max-width:1200px;
+  width:100%;
+  margin:auto;
+  padding:80px 25px;
+  color:white;
+}
+
+.hero-content small{
+  display:inline-block;
+  color:var(--gold);
+  font-size:15px;
+  font-weight:bold;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:15px;
+}
+
+.hero h1{
+  max-width:800px;
+  font-size:clamp(42px,6vw,72px);
+  line-height:1.05;
+  margin-bottom:25px;
+}
+
+.hero h1 span{
+  color:var(--gold);
+}
+
+.hero p{
+  max-width:650px;
+  font-size:19px;
+  color:#edf2f7;
+  margin-bottom:35px;
+}
+
+.btn{
+  display:inline-block;
+  padding:15px 24px;
+  border-radius:7px;
+  font-weight:bold;
+  margin-right:10px;
+  transition:.2s;
+}
+
+.btn-gold{
+  background:var(--gold);
+  color:#111;
+}
+
+.btn-white{
+  background:white;
+  color:var(--navy);
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+/* ================= SECTIONS ================= */
+
+section{
+  padding:90px 25px;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:55px;
+}
+
+.section-title small{
+  color:var(--gold);
+  font-weight:bold;
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+
+.section-title h2{
+  color:var(--navy);
+  font-size:40px;
+  margin-top:8px;
+}
+
+.section-title p{
+  max-width:700px;
+  margin:12px auto 0;
+  color:var(--muted);
+}
+
+/* ================= ENTREPRISE ================= */
+
+.about{
+  background:var(--light);
+}
+
+.about-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:55px;
+  align-items:center;
+}
+
+.about-image{
+  height:470px;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.about-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.about-text h2{
+  color:var(--navy);
+  font-size:38px;
+  margin-bottom:20px;
+}
+
+.about-text p{
+  color:var(--muted);
+  margin-bottom:18px;
+}
+
+/* ================= SERVICES ================= */
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+}
+
+.card{
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 5px 25px rgba(16,32,51,.08);
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.card-image{
+  height:220px;
+  overflow:hidden;
+}
+
+.card-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.card-body{
+  padding:25px;
+}
+
+.card-body h3{
+  color:var(--navy);
+  font-size:21px;
+  margin-bottom:10px;
+}
+
+.card-body p{
+  color:var(--muted);
+}
+
+/* ================= REALISATIONS ================= */
+
+.projects{
+  background:var(--light);
+}
+
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.project{
+  height:280px;
+  border-radius:12px;
+  overflow:hidden;
+  position:relative;
+}
+
+.project img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:.4s;
+}
+
+.project:hover img{
+  transform:scale(1.05);
+}
+
+.project-label{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:35px 20px 18px;
+  color:white;
+  background:linear-gradient(transparent,rgba(0,0,0,.8));
+  font-weight:bold;
+}
+
+/* ================= QUALITE ================= */
+
+.quality{
+  background:var(--navy);
+  color:white;
+  text-align:center;
+}
+
+.quality h2{
+  font-size:40px;
+  margin-bottom:18px;
+}
+
+.quality p{
+  max-width:750px;
+  margin:auto;
+  color:#dce5ef;
+}
+
+/* ================= CONTACT ================= */
+
+.contact{
+  background:white;
+}
+
+.contact-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+}
+
+.contact-box{
+  background:var(--light);
+  padding:35px;
+  border-radius:12px;
+}
+
+.contact-box h3{
+  color:var(--navy);
+  margin-bottom:20px;
+  font-size:25px;
+}
+
+.contact-item{
+  margin-bottom:18px;
+}
+
+.contact-item strong{
+  display:block;
+  color:var(--navy);
+}
+
+.contact-item a{
+  color:var(--gold);
+  font-weight:bold;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+  background:#071d38;
+  color:white;
+  padding:35px 25px;
+  text-align:center;
+}
+
+footer strong{
+  color:var(--gold);
+}
+
+footer p{
+  color:#b8c5d4;
+  margin-top:8px;
+  font-size:14px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:850px){
+
+  .about-grid,
+  .contact-grid{
+    grid-template-columns:1fr;
+  }
+
+  .services-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .projects-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  header{
+    height:68px;
+  }
+
+  .hero{
+    padding-top:68px;
+    min-height:680px;
+  }
+
+  .hero h1{
+    font-size:43px;
+  }
+
+  section{
+    padding:65px 18px;
+  }
+
+  .services-grid,
+  .projects-grid{
+    grid-template-columns:1fr;
+  }
+
+  .about-image{
+    height:350px;
+  }
+
+  .section-title h2{
+    font-size:32px;
+  }
+
+}
 </style>
-</head><body>
-<div class="box" id="loginBox"><h1>MANSA BTP</h1><p>Administration privée</p><form id="loginForm"><div class="field"><label>E-mail</label><input id="email" type="email" required></div><div class="field"><label>Mot de passe</label><input id="password" type="password" required></div><button type="submit">Se connecter</button></form><div class="msg" id="loginMsg"></div></div>
-<div class="box hidden" id="adminBox"><div class="top"><div><h1>Administration MANSA BTP</h1><p>Gestion privée des images du site</p></div><button class="logout" id="logout">Se déconnecter</button></div><div class="status" id="status">Chargement...</div><div class="grid" id="grid"></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL='https://cwfjfqdkcramkxfakfwx.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_qtRxSE2M8p1ZEgg9sOBKog_lfTHC1IT';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY), bucket='site-images';
-const labels=['Image 1','Image 2','Image 3','Image 4','Image 5','Image 6','Image 7'];
-const loginBox=document.getElementById('loginBox'),adminBox=document.getElementById('adminBox'),loginMsg=document.getElementById('loginMsg'),status=document.getElementById('status'),grid=document.getElementById('grid');
-function publicUrl(i){return SUPABASE_URL+'/storage/v1/object/public/'+bucket+'/image-'+i+'?v='+Date.now()}
-async function session(){const r=await sb.auth.getSession(); if(r.data.session){loginBox.classList.add('hidden');adminBox.classList.remove('hidden');render();}}
-async function render(){grid.innerHTML=''; for(let i=1;i<=7;i++){const c=document.createElement('div');c.className='card';c.innerHTML='<img src="" id="p'+i+'"><h3>'+labels[i-1]+'</h3><div class="small">Choisir une nouvelle photo</div><input id="f'+i+'" type="file" accept="image/*"><br><button class="save" id="b'+i+'">Envoyer cette image</button>';grid.appendChild(c);document.getElementById('p'+i).src=publicUrl(i);document.getElementById('b'+i).onclick=()=>upload(i);}}
-async function upload(i){const input=document.getElementById('f'+i),file=input.files?.[0];if(!file)return alert('Choisis une image.');status.textContent='Envoi de '+labels[i-1]+'...';const {error}=await sb.storage.from(bucket).upload('image-'+i,file,{upsert:true,contentType:file.type,cacheControl:'3600'});if(error){status.innerHTML='<span class="danger">Erreur : '+error.message+'</span>';return;}document.getElementById('p'+i).src=publicUrl(i);status.textContent=labels[i-1]+' mise à jour. Recharge le site public pour voir la nouvelle image.';}
-document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();loginMsg.textContent='Connexion...';const {error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(error){loginMsg.textContent='Erreur : '+error.message;return;}loginMsg.textContent='';await session();});
-document.getElementById('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
-session();
-</script></body></html>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+  <div class="header-inner">
+
+    <div class="logo">
+      MANSA <span>BTP</span>
+    </div>
+
+    <button class="menu-button" onclick="toggleMenu()">
+      ⋮
+    </button>
+
+    <nav class="menu" id="menu">
+
+      <a href="#accueil" onclick="closeMenu()">
+        Accueil
+      </a>
+
+      <a href="#entreprise" onclick="closeMenu()">
+        Entreprise
+      </a>
+
+      <a href="#services" onclick="closeMenu()">
+        Services
+      </a>
+
+      <a href="#realisations" onclick="closeMenu()">
+        Réalisations
+      </a>
+
+      <a href="#contact" onclick="closeMenu()">
+        Contact
+      </a>
+
+    </nav>
+
+  </div>
+
+</header>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero" id="accueil">
+
+  <div class="hero-content">
+
+    <small>
+      Construction • Génie civil • BTP
+    </small>
+
+    <h1>
+      Construire avec
+      <span>expertise.</span>
+      Bâtir avec confiance.
+    </h1>
+
+    <p>
+      MANSA BTP accompagne vos projets de construction
+      en Guinée avec rigueur, expertise et engagement.
+    </p>
+
+    <a
+      class="btn btn-gold"
+      href="#contact"
+    >
+      Parlons de votre projet
+    </a>
+
+    <a
+      class="btn btn-white"
+      href="#entreprise"
+    >
+      Découvrir MANSA BTP
+    </a>
+
+  </div>
+
+</section>
+
+
+<!-- ================= ENTREPRISE ================= -->
+
+<section class="about" id="entreprise">
+
+  <div class="container">
+
+    <div class="about-grid">
+
+      <div class="about-image">
+
+        <img
+          src="https://cwfjfqdkcramkxfakfwx.supabase.co/storage/v1/object/public/site-images/image-2"
+          alt="MANSA BTP"
+        >
+
+      </div>
+
+      <div class="about-text">
+
+        <small style="color:#f2ad00;font-weight:bold;">
+          NOTRE ENTREPRISE
+        </small>
+
+        <h2>
+          L'histoire de MANSA BTP
+        </h2>
+
+        <p>
+          Une ambition devenue réalité.
+        </p>
+
+        <p>
+          Fondée par <strong>Aboubacar Mansare</strong>,
+          ingénieur en génie civil, MANSA BTP est née
+          d'une ambition : participer activement au
+          développement de la Guinée à travers des
+          constructions solides, modernes et durables.
+        </p>
+
+        <p>
+          Notre entreprise place l'expertise technique,
+          la qualité d'exécution et la confiance au cœur
+          de chaque projet.
+        </p>
+
+        <p>
+          Nous ne construisons pas seulement des bâtiments.
+          Nous construisons des rêves, des opportunités
+          et l'avenir.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= SERVICES ================= -->
+
+<section id="services">
+
+  <div class="container">
+
+    <div class="section-title">
+
+      <small>
+        Notre savoir-faire
+      </small>
+
+      <h2>
+        Nos services
+      </h2>
+
+      <p>
+        Des solutions adaptées aux besoins des particuliers,
+        entreprises et projets professionnels.
+      </p>
+
+    </div>
+
+
+    <div class="services-grid">
+
+      <article class="card">
+
+        <div class="card-image">
+
+          <img
+            src="https://cwfjfqdkcramkxfakfwx.supabase.co/storage/v1/object/public/site-images/image-3"
+            alt="Construction"
+          >
+
+        </div>
+
+        <div class="card-body">
+
+          <h3>
+            Construction
+          </h3>
+
+          <p>
+            Construction de bâtiments résidentiels,
+            professionnels et ouvrages de qualité.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-image">
+
+          <img
+            src="https://cwfjfqdkcramkxfakfwx.supabase.co/storage/v1/object/public/site-images/image-4"
+            alt="Génie civil"
+          >
+
+        </div>
+
+        <div class="card-body">
+
+          <h3>
+            Génie civil
+          </h3>
+
+          <p>
+            Études, réalisation et suivi technique
+            de vos projets de génie civil.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article class="card">
+
+        <div class="card-image">
+
+          <img
+            src="https://cwfjfqdkcramkxfakfwx.supabase.co/storage/v1/object/public/site-images/image-5"
+            alt="Travaux"
+          >
+
+        </div>
+
+        <div class="card-body">
+
+          <h3>
+            Travaux & rénovation
+          </h3>
+
+          <p>
+            Rénovation, aménagement et amélioration
+            de bâtiments et infrastructures.
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= REALISATIONS ================= -->
+
+<section class="projects" id="realisations">
+
+  <div class="container">
+
+    <div class="section-title">
+
+      <small>
+        Nos réalisations
+      </small>
+
+      <h2>
+        Des projets qui parlent pour nous
+      </h2>
+
+      <p>
+        Découvrez quelques exemples de notre savoir-faire.
+      </p>
+
+    </div>
+
+
+    <div class="projects-grid">
+
+      <div class="project">
+
+        <img
+          src="https://cwfjfqdkcramkxfakfwx.supabase.co/storage/v1/object/public/site-images/image-5"
+          alt="Projet MANSA BTP"
+        >
+
+        <div class="project-label">
+          Projet MANSA BTP
+        </div>
+
+      </div>
+
+
+      <div class="project">
+
+        <img
+          src="https://cwfjfqdkcramkxfakfwx.supabase.co/storage/v1/object/public/site-images/image-6"
+          alt="Réalisation MANSA BTP"
+        >
+
+        <div class="project-label">
+          Réalisation MANSA BTP
+        </div>
+
+      </div>
+
+
+      <div class="project">
+
+        <img
+          src="
